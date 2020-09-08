@@ -2,240 +2,410 @@
 #include <windows.h>
 #include <stdio.h>
 
-#define THREADCOUNT 5
+using namespace std;
 
-HANDLE Thread[THREADCOUNT];
 HANDLE Mutex;
-HANDLE SemA, SemB, SemC, SemD;
 
-unsigned int lab3_thread_graph_id() {
-	return 4;
+HANDLE SemE, SemF, SemG, SemH, wait_interval, start_interval;
+
+unsigned int lab3_thread_graph_id()
+{
+    return 4;
 }
 
-const char* lab3_unsynchronized_threads() {
-	return "bcde";
+const char* lab3_unsynchronized_threads()
+{
+    return "degh";
 }
 
-const char* lab3_sequential_threads() {
-	return "efgh";
+const char* lab3_sequential_threads()
+{
+    return "efgh";
 }
 
-DWORD WINAPI threads_unsynchronized(LPVOID text) {
-	for (int i = 0; i < 4; ++i) {
-		WaitForSingleObject(Mutex, INFINITE);
-		std::cout << (char const*)text << std::flush;
-		ReleaseMutex(Mutex);
-		computation();
-	}
-	return 0;
+
+DWORD WINAPI thread_a(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'a' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+    return 0;
 }
 
-DWORD WINAPI thread_e(LPVOID text) {
-	for (int i = 0; i < 4; ++i) {
-		WaitForSingleObject(SemA, INFINITE);
-		WaitForSingleObject(Mutex, INFINITE);
-		std::cout <<(char const*)text << std::flush;
-		ReleaseMutex(Mutex);
-		computation();
-		ReleaseSemaphore(SemB, 1, nullptr);
-	}
-	return 0;
+DWORD WINAPI thread_b(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'b' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+    return 0;
+}
+DWORD WINAPI thread_c(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'c' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'c' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    return 0;
 }
 
-DWORD WINAPI thread_f(LPVOID text) {
-	for (int i = 0; i < 4; ++i) {
-		WaitForSingleObject(SemB, INFINITE);
-		WaitForSingleObject(Mutex, INFINITE);
-		std::cout <<(char const*)text << std::flush;
-		ReleaseMutex(Mutex);
-		computation();
-		ReleaseSemaphore(SemC, 1, nullptr);
-	}
-	return 0;
+DWORD WINAPI thread_d(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'd' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'd' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; ++i)
+    {
+         WaitForSingleObject(Mutex, INFINITE);
+        cout << 'd' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+
+    return 0;
 }
 
-DWORD WINAPI thread_g(LPVOID text) {
-	for (int i = 0; i < 4; ++i) {
-		WaitForSingleObject(SemC, INFINITE);
-		WaitForSingleObject(Mutex, INFINITE);
-		std::cout << (char const*) text << std::flush;
-		ReleaseMutex(Mutex);
-		computation();
-		ReleaseSemaphore(SemD, 1, nullptr);
-	}
-	return 0;
+DWORD WINAPI thread_e(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'e' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'e' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; ++i)
+    {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'e' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(SemE, INFINITE);
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'e' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+        ReleaseSemaphore(SemG, 1, nullptr);
+    }
+
+    return 0;
 }
 
-DWORD WINAPI thread_h(LPVOID text) {
-	for (int i = 0; i < 4; ++i) {
-		WaitForSingleObject(SemD, INFINITE);
-		WaitForSingleObject(Mutex, INFINITE);
-		std::cout << (char const*) text << std::flush;
-		ReleaseMutex(Mutex);
-		computation();
-		ReleaseSemaphore(SemA, 1, nullptr);
-	}
-	return 0;
+DWORD WINAPI thread_g(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'g' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
+
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
+
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(SemG, INFINITE);
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'g' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+        ReleaseSemaphore(SemH, 1, nullptr);
+    }
+    return 0;
 }
 
-int lab3_init() {
-	DWORD ThreadID;
+DWORD WINAPI thread_h(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'h' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
 
-	Mutex = CreateMutex(nullptr, FALSE, nullptr);
-	if (Mutex == nullptr) {
-		std::cout << "CreateMutex error " << GetLastError() << std::endl;
-		return 1;
-	}
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
 
-	SemA = CreateSemaphore(nullptr, 1, 1, nullptr);
-	if (SemA == nullptr) {
-		std::cout << "Error: SemA" << GetLastError() << std::endl;
-		return 1;
-	}
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(SemH, INFINITE);
 
-	SemB = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (SemA == nullptr) {
-		std::cout << "Error: Sem2 " << GetLastError() << std::endl;
-		return 1;
-	}
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'h' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+        ReleaseSemaphore(SemF, 1, nullptr);
 
-	SemC = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (SemA == nullptr) {
-		std::cout << "Error: Sem3" << GetLastError() << std::endl;
-		return 1;
-	}
+    }
 
-	SemD = CreateSemaphore(nullptr, 0, 1, nullptr);
-	if (SemA == nullptr) {
-		std::cout << "Error: Sem4" << GetLastError() << std::endl;
-		return 1;
-	}
+    ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
+    WaitForSingleObject(start_interval, INFINITE);  //start new interval
 
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'h' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
 
-	int count = 0;
+    return 0;
+}
 
-	char const* textsCADE[] = { "c", "a", "d", "e" };
+DWORD WINAPI thread_f(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        ReleaseSemaphore(SemF, 1, nullptr);
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'f' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+        ReleaseSemaphore(SemE, 1, nullptr);
+    }
 
-	for (int i = 0; i < 4; ++i)	{
-		Thread[i] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)threads_unsynchronized, (void*)textsCADE[i], 0, &ThreadID);
-		if (Thread[i] == nullptr) {
-			std::cout << "CreateThread error: " << textsCADE[i] << GetLastError() << std::endl;
-			return 1;
-		}
-		else ++count;
-	}
+    return 0;
+}
+DWORD WINAPI thread_i(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'i' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
 
-	for (int i = 0; i < count; ++i) {
-		WaitForSingleObject(Thread[i], INFINITE);
-	}
+    return 0;
+}
+DWORD WINAPI thread_k(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'k' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
 
-	count = 0;
+    return 0;
+}
+DWORD WINAPI thread_m(LPVOID lpParam)
+{
+    for (int i = 0; i < 4; i++) {
+        WaitForSingleObject(Mutex, INFINITE);
+        cout << 'm' << flush;
+        ReleaseMutex(Mutex);
+        computation();
+    }
 
-	char const* textsCBDE[] = { "c", "b", "d", "e" };
-
-	for (int i = 0; i < 4; ++i)	{
-		Thread[i] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)threads_unsynchronized, (void*)textsCBDE[i], 0, &ThreadID);
-		if (Thread[i] == nullptr) {
-			std::cout << "CreateThread error: " << textsCBDE[i] << GetLastError() << std::endl;
-			return 1;
-		}
-		else ++count;
-	}
-
-	for (int i = 0; i < count; ++i) {
-		WaitForSingleObject(Thread[i], INFINITE);
-	}
-
-
-	count = 0;
-
-	char const* textsHGDE[] = { "h", "g", "d", "e" };
-
-	for (int i = 0; i < 4; ++i)	{
-		Thread[i] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)threads_unsynchronized, (void*)textsHGDE[i], 0, &ThreadID);
-		if (Thread[i] == nullptr) {
-			std::cout << "CreateThread error: " << textsHGDE[i] << GetLastError() << std::endl;
-			return 1;
-		}
-		else ++count;
-	}
-
-	for (int i = 0; i < count; ++i) {
-		WaitForSingleObject(Thread[i], INFINITE);
-	}
+    return 0;
+}
 
 
-	count = 0;
-
-	char const* textsHFEG[] = { "e", "f", "g", "h" };
-
-	Thread[0] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)thread_e, (void*)textsHFEG[0], 0, &ThreadID);
-	if (Thread[0] == nullptr) {
-		std::cout << "CreateThread error: " << textsHGDE[0] << GetLastError() << std::endl;
-		return 1;
-	}
-
-	Thread[1] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)thread_f, (void*)textsHFEG[1], 0, &ThreadID);
-	if (Thread[1] == nullptr) {
-		std::cout << "CreateThread error: " << textsHGDE[1] << GetLastError() << std::endl;
-		return 1;
-	}
-
-	Thread[2] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)thread_g, (void*)textsHFEG[2], 0, &ThreadID);
-	if (Thread[2] == nullptr) {
-		std::cout << "CreateThread error: " << textsHGDE[2] << GetLastError() << std::endl;
-		return 1;
-	}
-
-	Thread[3] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)thread_h, (void*)textsHFEG[3], 0, &ThreadID);
-	if (Thread[3] == nullptr) {
-		std::cout << "CreateThread error: " << textsHGDE[3] << GetLastError() << std::endl;
-		return 1;
-	}
 
 
-	for (int i = 0; i < 3; ++i) {
-		WaitForSingleObject(Thread[i], INFINITE);
-	}
-
-	count = 0;
-
-	char const* textsHIK[] = { "h", "i", "k"};
-
-	for (int i = 0; i < 3; ++i)	{
-		Thread[i] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)threads_unsynchronized, (void*)textsHIK[i], 0, &ThreadID);
-		if (Thread[i] == nullptr) {
-			std::cout << "CreateThread error: " << textsHIK[i] << GetLastError() << std::endl;
-			return 1;
-		}
-		else ++count;
-	}
-
-	for (int i = 0; i < count; ++i) {
-		WaitForSingleObject(Thread[i], INFINITE);
-	}
+int lab3_init()
+{
+    Mutex = CreateMutex(nullptr, FALSE, nullptr);
 
 
-	char const* textsM = "m";
-	Thread[0] = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)threads_unsynchronized, (void*)textsM, 0, &ThreadID);
-	if (Thread[0] == nullptr) {
-		std::cout << "CreateThread error: " << textsM << GetLastError() << std::endl;
-		return 1;
-	}
+    if (Mutex == nullptr)
+    {
+        cout << "CreateMutex error " << GetLastError() << endl;
+        return 1;
+    }
 
-	WaitForSingleObject(Thread[0], INFINITE);
+    SemE = CreateSemaphore(nullptr, 1, 1, nullptr);
+    if (SemE == nullptr)
+    {
+        cout << "CreateSemaphore error: SemD" << GetLastError() << endl;
+        return 1;
+    }
 
-	for (int i = 0; i < THREADCOUNT; ++i) {
-		CloseHandle(Thread[i]);
-	}
+    SemF = CreateSemaphore(nullptr, 0, 1, nullptr);
+    if (SemF == nullptr)
+    {
+        cout << "CreateSemaphore error: SemE " << GetLastError() << endl;
+        return 1;
+    }
 
-	CloseHandle(SemA);
-	CloseHandle(SemB);
-	CloseHandle(SemC);
-	CloseHandle(SemD);
-	CloseHandle(Mutex);
+    SemG = CreateSemaphore(nullptr, 0, 1, nullptr);
+    if (SemG == nullptr)
+    {
+        cout << "CreateSemaphore error: SemG" << GetLastError() << endl;
+        return 1;
+    }
 
-	std::cout << std::endl;
+    SemH = CreateSemaphore(nullptr, 0, 1, nullptr);
+    if (SemH == nullptr)
+    {
+        cout << "CreateSemaphore error: SemH" << GetLastError() << endl;
+        return 1;
+    }
 
-	return 0;
+    wait_interval = CreateSemaphore(nullptr, 0, 3, nullptr);
+    if (wait_interval == nullptr)
+    {
+        cout << "CreateSemaphore error: wait_interval" << GetLastError() << endl;
+        return 1;
+    }
+    start_interval = CreateSemaphore(nullptr, 0, 3, nullptr);
+    if (start_interval == nullptr)
+    {
+        cout << "CreateSemaphore error: start_interval" << GetLastError() << endl;
+        return 1;
+    }
+
+    HANDLE threadA, threadB, threadC, threadD, threadE, threadF, threadG, threadH, threadI, threadK, threadM;
+
+    //1-st interval
+    threadA = CreateThread(nullptr, 0, thread_a, nullptr, 0, nullptr);
+    if (threadA == nullptr) return GetLastError();
+
+    threadC = CreateThread(nullptr, 0, thread_c, nullptr, 0, nullptr);
+    if (threadC == nullptr) return GetLastError();
+
+    threadD = CreateThread(nullptr, 0, thread_d, nullptr, 0, nullptr);
+    if (threadD == nullptr) return GetLastError();
+
+    threadE = CreateThread(nullptr, 0, thread_e, nullptr, 0, nullptr);
+    if (threadE == nullptr) return GetLastError();
+
+    WaitForSingleObject(threadA, INFINITE);                              //join with ended thread A
+    WaitForSingleObject(wait_interval, INFINITE);                   //wait for thread C to finish
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread D to finish
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread E to finish
+
+    //2-d interval
+
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread C
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread D
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread E
+
+    threadB = CreateThread(nullptr, 0, thread_b, nullptr, 0, nullptr);
+    if (threadB == nullptr) return GetLastError();
+
+    WaitForSingleObject(threadC, INFINITE);						//join with ended thread C
+    WaitForSingleObject(threadB, INFINITE);						//join with ended thread B
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread D to finish
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread E to finish
+
+    //3-d interval
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread D
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread E
+
+
+    threadG = CreateThread(nullptr, 0, thread_g, nullptr, 0, nullptr);
+    if (threadG == nullptr) return GetLastError();
+
+    threadH = CreateThread(nullptr, 0, thread_h, nullptr, 0, nullptr);
+    if (threadH == nullptr) return GetLastError();
+    WaitForSingleObject(threadD, INFINITE);						//join with ended thread D
+    WaitForSingleObject(wait_interval, INFINITE);                   //wait for thread E to finish
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread G to finish
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread H to finish
+
+    //4-th interval
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread G
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread E
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread H
+    threadF = CreateThread(nullptr, 0, thread_f, nullptr, 0, nullptr);
+    if (threadF == nullptr) return GetLastError();
+    WaitForSingleObject(threadG, INFINITE);						//join with ended thread G
+    WaitForSingleObject(threadE, INFINITE);						//join with ended thread E
+    WaitForSingleObject(threadF, INFINITE);						//join with ended thread F
+    WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread H to finish
+
+
+    //5-th interval
+    ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread H
+    threadI = CreateThread(nullptr, 0, thread_i, nullptr, 0, nullptr);
+    if (threadI == nullptr) return GetLastError();
+    threadK = CreateThread(nullptr, 0, thread_k, nullptr, 0, nullptr);
+    if (threadK == nullptr) return GetLastError();
+    WaitForSingleObject(threadH, INFINITE);						//join with ended thread H
+    WaitForSingleObject(threadI, INFINITE);						//join with ended thread I
+    WaitForSingleObject(threadK, INFINITE);						//join with ended thread K
+
+    //6-th interval
+    threadM = CreateThread(nullptr, 0, thread_m, nullptr, 0, nullptr);
+    if (threadM == nullptr) return GetLastError();
+    WaitForSingleObject(threadM, INFINITE);						//join with ended thread M
+
+
+    //CLOSE DA ALL
+
+    CloseHandle(threadA);
+    CloseHandle(threadB);
+    CloseHandle(threadC);
+    CloseHandle(threadD);
+    CloseHandle(threadE);
+    CloseHandle(threadF);
+    CloseHandle(threadG);
+    CloseHandle(threadH);
+    CloseHandle(threadI);
+    CloseHandle(threadK);
+    CloseHandle(threadM);
+
+    CloseHandle(SemE);
+    CloseHandle(SemF);
+    CloseHandle(SemG);
+    CloseHandle(SemH);
+    CloseHandle(wait_interval);
+    CloseHandle(start_interval);
+    CloseHandle(Mutex);
+    cout << endl;
+    return 0;
 }
